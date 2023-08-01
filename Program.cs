@@ -13,6 +13,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<MainContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddCors();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -23,6 +25,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(builder => builder
+    .AllowAnyOrigin() // Разрешить запросы с любых доменов
+    .AllowAnyHeader() // Разрешить все заголовки
+    .AllowAnyMethod()); // Разрешить все HTTP-методы (GET, POST, PUT, DELETE и т.д.)
 
 app.UseAuthorization();
 

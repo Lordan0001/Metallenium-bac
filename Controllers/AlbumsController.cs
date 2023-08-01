@@ -49,6 +49,21 @@ namespace Metall_Fest.Controllers
             return album;
         }
 
+        [HttpGet("albumbyband/{bandId}")]
+        public async Task<ActionResult<IEnumerable<Album>>> GetAlbumByBandId(int bandId)
+        {
+            if (_context.albums == null)
+            {
+                return NotFound();
+            }
+            var albums = await _context.albums.Where(album => album.bandId == bandId).ToListAsync();
+            if (albums == null || albums.Count == 0)
+            {
+                return NotFound();
+            }
+            return albums;
+        }
+
         // PUT: api/Albums/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
