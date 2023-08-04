@@ -31,6 +31,21 @@ namespace Metall_Fest.Controllers
             return await _context.songs.ToListAsync();
         }
 
+        [HttpGet("songsbyalbum/{id}")]
+        public async Task<ActionResult<IEnumerable<Song>>> GetSongsByAlbum(int id)
+        {
+            if (_context.songs == null)
+            {
+                return NotFound();
+            }
+            var songs = await _context.songs.Where(song => song.albumId == id).ToListAsync();
+            if (songs == null || songs.Count == 0)
+            {
+                return NotFound();
+            }
+            return songs;
+        }
+
         // GET: api/Songs/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Song>> GetSong(int id)

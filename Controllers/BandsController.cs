@@ -83,12 +83,29 @@ namespace Metall_Fest.Controllers
         // POST: api/Bands
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Band>> PostBand(Band band)
+        public async Task<ActionResult<Band>> PostBand([FromForm] Band band, IFormFile image)
         {
-          if (_context.bands == null)
-          {
-              return Problem("Entity set 'MainContext.bands'  is null.");
-          }
+            if (_context.bands == null)
+            {
+                return Problem("Entity set 'MainContext.bands' is null.");
+            }
+
+            if (image != null && image.Length > 0)
+            {
+                // Get the original filename of the image
+                var fileName = Path.GetFileName(image.FileName);
+
+                // Save the image to the server's upload folder with the original filename
+                var imagePath = Path.Combine("uploads", fileName);
+                using (var fileStream = new FileStream(imagePath, FileMode.Create))
+                {
+                    await image.CopyToAsync(fileStream);
+                }
+
+                // Set the imageUrl property of the band to the saved image path
+                band.imageUrl = imagePath;
+            }
+
             _context.bands.Add(band);
             await _context.SaveChangesAsync();
 

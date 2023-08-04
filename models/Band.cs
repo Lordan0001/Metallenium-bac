@@ -12,6 +12,7 @@ namespace Metall_Fest.models
         public string? bandDescription { get; set; }
         [Required]
         public string? bandType { get; set; }
-        
+        public string? imageUrl { get; set; }
+
     }
 }
