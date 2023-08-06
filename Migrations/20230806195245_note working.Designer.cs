@@ -4,6 +4,7 @@ using Metall_Fest.models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Metall_Fest.Migrations
 {
     [DbContext(typeof(MainContext))]
-    partial class MainContextModelSnapshot : ModelSnapshot
+    [Migration("20230806195245_note working")]
+    partial class noteworking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,6 +45,8 @@ namespace Metall_Fest.Migrations
 
                     b.HasKey("albumId");
 
+                    b.HasIndex("bandId");
+
                     b.ToTable("albums");
                 });
 
@@ -66,7 +71,6 @@ namespace Metall_Fest.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("imageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("bandId");
@@ -91,7 +95,31 @@ namespace Metall_Fest.Migrations
 
                     b.HasKey("songId");
 
+                    b.HasIndex("albumId");
+
                     b.ToTable("songs");
+                });
+
+            modelBuilder.Entity("Metall_Fest.models.Album", b =>
+                {
+                    b.HasOne("Metall_Fest.models.Band", "band")
+                        .WithMany()
+                        .HasForeignKey("bandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("band");
+                });
+
+            modelBuilder.Entity("Metall_Fest.models.Song", b =>
+                {
+                    b.HasOne("Metall_Fest.models.Album", "album")
+                        .WithMany()
+                        .HasForeignKey("albumId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("album");
                 });
 #pragma warning restore 612, 618
         }

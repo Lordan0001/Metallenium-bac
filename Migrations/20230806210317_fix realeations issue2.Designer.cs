@@ -4,6 +4,7 @@ using Metall_Fest.models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Metall_Fest.Migrations
 {
     [DbContext(typeof(MainContext))]
-    partial class MainContextModelSnapshot : ModelSnapshot
+    [Migration("20230806210317_fix realeations issue2")]
+    partial class fixrealeationsissue2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,6 +44,8 @@ namespace Metall_Fest.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("albumId");
+
+                    b.HasIndex("bandId");
 
                     b.ToTable("albums");
                 });
@@ -91,7 +96,41 @@ namespace Metall_Fest.Migrations
 
                     b.HasKey("songId");
 
+                    b.HasIndex("albumId");
+
                     b.ToTable("songs");
+                });
+
+            modelBuilder.Entity("Metall_Fest.models.Album", b =>
+                {
+                    b.HasOne("Metall_Fest.models.Band", "band")
+                        .WithMany("albums")
+                        .HasForeignKey("bandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("band");
+                });
+
+            modelBuilder.Entity("Metall_Fest.models.Song", b =>
+                {
+                    b.HasOne("Metall_Fest.models.Album", "album")
+                        .WithMany("songs")
+                        .HasForeignKey("albumId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("album");
+                });
+
+            modelBuilder.Entity("Metall_Fest.models.Album", b =>
+                {
+                    b.Navigation("songs");
+                });
+
+            modelBuilder.Entity("Metall_Fest.models.Band", b =>
+                {
+                    b.Navigation("albums");
                 });
 #pragma warning restore 612, 618
         }
