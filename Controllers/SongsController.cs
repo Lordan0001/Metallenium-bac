@@ -66,13 +66,10 @@ namespace Metall_Fest.Controllers
 
         // PUT: api/Songs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutSong(int id, Song song)
+        [HttpPut]
+        public async Task<IActionResult> PutSong( Song song)
         {
-            if (id != song.songId)
-            {
-                return BadRequest();
-            }
+           
 
             _context.Entry(song).State = EntityState.Modified;
 
@@ -82,7 +79,7 @@ namespace Metall_Fest.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!SongExists(id))
+                if (!SongExists(song.songId))
                 {
                     return NotFound();
                 }

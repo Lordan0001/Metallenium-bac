@@ -49,17 +49,25 @@ namespace Metall_Fest.Controllers
             return band;
         }
 
-        // PUT: api/Bands/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutBand(int id, Band band)
+        [HttpPut]
+        public async Task<IActionResult> PutBand([FromForm] Band band, IFormFile image)
         {
-            if (id != band.bandId)
-            {
-                return BadRequest();
-            }
+            var bandId = band.bandId; // Extract bandId from the received band object
 
             _context.Entry(band).State = EntityState.Modified;
+
+            if (image != null && image.Length > 0)
+            {
+                var fileName = Path.GetFileName(image.FileName);
+                var imagePath = Path.Combine("uploads", fileName);
+
+                using (var fileStream = new FileStream(imagePath, FileMode.Create))
+                {
+                    await image.CopyToAsync(fileStream);
+                }
+
+                band.imageUrl = imagePath; // Update the imageUrl property
+            }
 
             try
             {
@@ -67,7 +75,7 @@ namespace Metall_Fest.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BandExists(id))
+                if (!BandExists(bandId))
                 {
                     return NotFound();
                 }
@@ -79,6 +87,7 @@ namespace Metall_Fest.Controllers
 
             return NoContent();
         }
+
 
         // POST: api/Bands
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

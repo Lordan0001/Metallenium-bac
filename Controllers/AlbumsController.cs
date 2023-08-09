@@ -64,15 +64,11 @@ namespace Metall_Fest.Controllers
             return albums;
         }
 
-        // PUT: api/Albums/5
+        // PUT: api/Albums
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAlbum(int id, Album album)
+        [HttpPut]
+        public async Task<IActionResult> PutAlbum(Album album)
         {
-            if (id != album.albumId)
-            {
-                return BadRequest();
-            }
 
             _context.Entry(album).State = EntityState.Modified;
 
@@ -82,7 +78,7 @@ namespace Metall_Fest.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!AlbumExists(id))
+                if (!AlbumExists(album.albumId))
                 {
                     return NotFound();
                 }
@@ -94,6 +90,8 @@ namespace Metall_Fest.Controllers
 
             return NoContent();
         }
+
+
 
         // POST: api/Albums
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
