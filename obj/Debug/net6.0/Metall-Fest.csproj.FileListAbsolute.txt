@@ -265,3 +265,5 @@ D:\Projects\.NET\Metall-Fest\bin\Debug\net6.0\runtimes\unix\lib\net6.0\System.Dr
 D:\Projects\.NET\Metall-Fest\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
 D:\Projects\.NET\Metall-Fest\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 D:\Projects\.NET\Metall-Fest\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+D:\Projects\.NET\Metall-Fest\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\Projects\.NET\Metall-Fest\bin\Debug\net6.0\BCrypt.Net-Next.dll

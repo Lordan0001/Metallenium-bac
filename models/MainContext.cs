@@ -8,5 +8,7 @@ namespace Metall_Fest.models
         public DbSet<Band> bands { get; set; }
         public DbSet<Album> albums { get; set; }
         public DbSet<Song> songs { get; set; }
+
+        public DbSet<User> users { get; set; }
     }
 }
