@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Metall_Fest.models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Metall_Fest.Controllers
 {
@@ -21,6 +22,7 @@ namespace Metall_Fest.Controllers
         }
 
         // GET: api/Bands
+        //[HttpGet,Authorize(Roles = "user")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Band>>> Getbands()
         {

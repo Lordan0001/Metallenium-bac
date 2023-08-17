@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Metall_Fest.Controllers
 {
@@ -28,68 +29,6 @@ namespace Metall_Fest.Controllers
             _configuration = configuration;
         }
 
-        // GET: api/Users
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> Getusers()
-        {
-          if (_context.users == null)
-          {
-              return NotFound();
-          }
-            return await _context.users.ToListAsync();
-        }
-
-        // GET: api/Users/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
-        {
-          if (_context.users == null)
-          {
-              return NotFound();
-          }
-            var user = await _context.users.FindAsync(id);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return user;
-        }
-
-        // PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
-        {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register(User user)
         {
@@ -97,6 +36,14 @@ namespace Metall_Fest.Controllers
             {
                 return Problem("Entity set 'MainContext.users' is null.");
             }
+
+            var alredyExistingEmail = await _context.users.FirstOrDefaultAsync(u => u.email == user.email);
+            if (alredyExistingEmail != null)
+            {
+                return Problem("User with this email already exist!");
+
+            }
+ 
             CreatePasswordHash(user.password, out byte[] passwordHash, out byte[] passwordSalt);
 
             user.role = "user";
@@ -106,9 +53,17 @@ namespace Metall_Fest.Controllers
             _context.users.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return Ok(user);
         }
 
+        [HttpGet("getMe"),Authorize]
+        public ActionResult<object> GetMe()
+        {
+            var userName = User?.Identity?.Name;
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var role  = User.FindFirstValue(ClaimTypes.Role);
+            return Ok(new {userName,email,role});
+        }
 
         [HttpPost("login")]
         public async Task<ActionResult<User>> Login(User user)
@@ -128,7 +83,14 @@ namespace Metall_Fest.Controllers
 
 
             string token = CreateToken(existingUser);
-            return Ok(token);//token
+
+            var response = new
+            {
+                Token = token,
+                User = existingUser
+            };
+
+            return Ok(response);
         }
         private string CreateToken(User user) {
 
@@ -152,32 +114,6 @@ namespace Metall_Fest.Controllers
 
             return jwt;
         }
-
-
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            if (_context.users == null)
-            {
-                return NotFound();
-            }
-            var user = await _context.users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _context.users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool UserExists(int id)
-        {
-            return (_context.users?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512())
@@ -187,7 +123,7 @@ namespace Metall_Fest.Controllers
             }
 
         }
-       
+
         private bool VerifyPasswordHash(string reqPassword, byte[] storedPasswordHash, byte[] storedPasswordSalt)
         {
             using (var hmac = new HMACSHA512(storedPasswordSalt))
