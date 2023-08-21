@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Metall_Fest.models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Metall_Fest.Controllers
 {
@@ -21,7 +22,8 @@ namespace Metall_Fest.Controllers
         }
 
         // GET: api/Albums
-        [HttpGet]
+/*        [HttpGet, Authorize(Roles = "admin")]
+*/        [HttpGet]
         public async Task<ActionResult<IEnumerable<Album>>> Getalbums()
         {
           if (_context.albums == null)
@@ -32,8 +34,9 @@ namespace Metall_Fest.Controllers
         }
 
         // GET: api/Albums/5
+        /* [HttpGet("{id}"),Authorize(Roles = "admin")]*/
         [HttpGet("{id}")]
-        public async Task<ActionResult<Album>> GetAlbum(int id)
+         public async Task<ActionResult<Album>> GetAlbum(int id)
         {
           if (_context.albums == null)
           {
@@ -49,6 +52,8 @@ namespace Metall_Fest.Controllers
             return album;
         }
 
+
+      //  [HttpGet("albumbyband/{bandId}"), Authorize(Roles = "admin")]
         [HttpGet("albumbyband/{bandId}")]
         public async Task<ActionResult<IEnumerable<Album>>> GetAlbumByBandId(int bandId)
         {
@@ -66,7 +71,8 @@ namespace Metall_Fest.Controllers
 
         // PUT: api/Albums
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut]
+        [HttpPut, Authorize(Roles = "admin")]
+
         public async Task<IActionResult> PutAlbum(Album album)
         {
 
@@ -95,7 +101,7 @@ namespace Metall_Fest.Controllers
 
         // POST: api/Albums
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "admin")]
         public async Task<ActionResult<Album>> PostAlbum(Album album)
         {
           if (_context.albums == null)
@@ -109,7 +115,7 @@ namespace Metall_Fest.Controllers
         }
 
         // DELETE: api/Albums/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteAlbum(int id)
         {
             if (_context.albums == null)

@@ -23,7 +23,8 @@ namespace Metall_Fest.Controllers
 
         // GET: api/Bands
         //[HttpGet,Authorize(Roles = "user")]
-        [HttpGet]
+        [HttpGet/*, Authorize(Roles = "admin")*/]
+
         public async Task<ActionResult<IEnumerable<Band>>> Getbands()
         {
           if (_context.bands == null)
@@ -51,7 +52,7 @@ namespace Metall_Fest.Controllers
             return band;
         }
 
-        [HttpPut]
+        [HttpPut, Authorize(Roles = "admin")]
         public async Task<IActionResult> PutBand([FromForm] Band band, IFormFile image)
         {
             var bandId = band.bandId; // Extract bandId from the received band object
@@ -93,7 +94,7 @@ namespace Metall_Fest.Controllers
 
         // POST: api/Bands
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "admin")]
         public async Task<ActionResult<Band>> PostBand([FromForm] Band band, IFormFile image)
         {
             if (_context.bands == null)
@@ -122,9 +123,22 @@ namespace Metall_Fest.Controllers
 
             return CreatedAtAction("GetBand", new { id = band.bandId }, band);
         }
+        [HttpPost("search")]
+        public async Task<ActionResult<Band>> Search(Band searchCriteria)
+        {
+            if (string.IsNullOrWhiteSpace(searchCriteria.bandName))
+            {
+                return BadRequest("Band name must not be empty.");
+            }
 
+            var matchedBands = await _context.bands
+                .Where(band => band.bandName.Contains(searchCriteria.bandName))
+                .ToListAsync();
+
+            return Ok(matchedBands);
+        }
         // DELETE: api/Bands/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteBand(int id)
         {
             if (_context.bands == null)

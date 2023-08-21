@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Metall_Fest.models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Metall_Fest.Controllers
 {
@@ -66,7 +67,7 @@ namespace Metall_Fest.Controllers
 
         // PUT: api/Songs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut]
+        [HttpPut, Authorize(Roles = "admin")]
         public async Task<IActionResult> PutSong( Song song)
         {
            
@@ -94,7 +95,7 @@ namespace Metall_Fest.Controllers
 
         // POST: api/Songs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost,Authorize(Roles = "admin")]
         public async Task<ActionResult<Song>> PostSong(Song song)
         {
           if (_context.songs == null)
@@ -108,7 +109,7 @@ namespace Metall_Fest.Controllers
         }
 
         // DELETE: api/Songs/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteSong(int id)
         {
             if (_context.songs == null)

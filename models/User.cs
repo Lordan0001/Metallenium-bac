@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Metall_Fest.models
 {
@@ -22,6 +24,8 @@ namespace Metall_Fest.models
 
    
         public byte[]? passwordSalt { get; set; }
+        [Column(TypeName = "money")]
+        public decimal? money { get; set; }
 
     }
 }

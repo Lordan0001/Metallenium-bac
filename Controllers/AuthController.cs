@@ -50,6 +50,7 @@ namespace Metall_Fest.Controllers
             user.password = "pass";
             user.passwordHash = passwordHash;
             user.passwordSalt = passwordSalt;
+            user.money = 0;
             _context.users.Add(user);
             await _context.SaveChangesAsync();
 
